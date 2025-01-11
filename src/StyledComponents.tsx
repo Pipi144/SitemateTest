@@ -1,7 +1,7 @@
 import {Text, View} from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
-import {TPost} from './Components/Item';
+import {TNew} from './Models/news';
 
 export const StyledAppRoot = styled(Animated.View)<{}>`
   flex: 1;
@@ -29,7 +29,7 @@ export const StyledItemText = styled.Text`
   text-align: center;
 ` as typeof Text;
 
-export const StyledPostList = styled(Animated.FlatList<TPost>)`
+export const StyledPostList = styled(Animated.FlatList<TNew>)`
   flex: 1;
   width: 100%;
-` as typeof Animated.FlatList<TPost>;
+` as typeof Animated.FlatList<TNew>;

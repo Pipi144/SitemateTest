@@ -10,15 +10,16 @@
     "test": "jest"
   },
   "dependencies": {
-    "@react-native-community/template": "^0.75.2",
+    "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-vector-icons/common": "^11.0.0",
     "@tanstack/react-query": "^5.63.0",
     "axios": "^1.7.9",
     "immer": "^10.1.1",
     "react": "18.3.1",
-    "react-native": "0.75.2",
+    "react-native": "^0.75.2",
     "react-native-clean-project": "^4.0.3",
     "react-native-eject": "^1.0.2",
+    "react-native-error-boundary": "^1.2.7",
     "react-native-reanimated": "^3.16.6",
     "react-native-svg": "^15.11.1",
     "styled-components": "^6.1.13",

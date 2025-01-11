@@ -1,21 +1,32 @@
 import {useQuery} from '@tanstack/react-query';
 import axios from 'axios';
-import {TPost} from '../Components/Item';
-
-const baseQuery = ['base-query'];
-
-export const getAPIQuery = () =>
+import {TAPIResponse} from '../Models/utilityTypes';
+import {TNew} from '../Models/news';
+type TQueryParams = {
+  q?: string; //search string
+  apiKey: string;
+};
+export const newsQuery = ['news-query'];
+const generateQueryKey = (search?: string) => {
+  return [newsQuery, search];
+};
+export const getAPIQuery = (search?: string) =>
   useQuery({
-    queryKey: baseQuery,
+    queryKey: generateQueryKey(search),
     queryFn: async () => {
+      const params: TQueryParams = {
+        apiKey: 'f9eac123388349c79e7d3464832d85c2',
+      };
+      if (search) {
+        params.q = search;
+      }
       try {
         const options = {
           method: 'GET',
-          url: 'https://jsonplaceholder.typicode.com/posts',
-          params: {},
+          url: 'https://newsapi.org/v2/everything',
+          params,
         };
-        const response = await axios.request<TPost[]>(options);
-        console.log('DATA:', response.data);
+        const response = await axios.request<TAPIResponse<TNew>>(options);
 
         return response;
       } catch (error) {
@@ -23,6 +34,7 @@ export const getAPIQuery = () =>
         throw new Error('Error fetching data');
       }
     },
+    enabled: Boolean(search),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchInterval: 0,

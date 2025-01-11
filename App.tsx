@@ -17,6 +17,9 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import RootProvider from './src/Provider/RootProvider';
 import MainApp from './src/main';
+import NewProvider from './src/Provider/NewProvider';
+import ErrorBoundary from 'react-native-error-boundary';
+import CustomErrorFallback from './src/Components/CustomErrorFallback';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -26,15 +29,20 @@ function App(): React.JSX.Element {
   };
 
   return (
-    <RootProvider>
-      <SafeAreaView style={{flex: 1}}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <MainApp />
-      </SafeAreaView>
-    </RootProvider>
+    <ErrorBoundary FallbackComponent={CustomErrorFallback}>
+      <RootProvider>
+        <SafeAreaView style={{flex: 1}}>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          />
+
+          <NewProvider>
+            <MainApp />
+          </NewProvider>
+        </SafeAreaView>
+      </RootProvider>
+    </ErrorBoundary>
   );
 }
 

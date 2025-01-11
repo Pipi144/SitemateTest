@@ -1,77 +1,41 @@
-import {StyleSheet, Text} from 'react-native';
-import React, {useEffect} from 'react';
+import {StyleSheet} from 'react-native';
+import React from 'react';
 import {StyledAppRoot, StyledPostList, StyledText} from './StyledComponents';
 import {getAPIQuery} from './Query/query';
-import {useShallow} from 'zustand/shallow';
-import {useGlobalStore} from './Store/GlobalStore';
-import Animated, {
-  Extrapolation,
-  interpolate,
+import {
+  FadeOutDown,
   LinearTransition,
   StretchInY,
   StretchOutY,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
 } from 'react-native-reanimated';
-import Item from './Components/Item';
+import {useNewContext} from './Provider/NewProvider';
+import NewItem from './Components/NewItem';
+import SearchInput from './Components/SearchInput';
 
 type Props = {};
 
 const MainApp = (props: Props) => {
-  const res = getAPIQuery();
-  const data = res.data?.data ?? [];
-  const {theme} = useGlobalStore(
-    useShallow(state => ({
-      theme: state.theme,
-    })),
-  );
-  // useEffect(() => {
-  //   console.log(res);
-  // }, [res]);
-  const textSharedValue = useSharedValue(0);
-  const textAnimatedStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      textSharedValue.value,
-      [0, 1],
-      [0, 1],
-      Extrapolation.CLAMP,
-    );
-    const scaleX = interpolate(
-      textSharedValue.value,
-      [0, 1],
-      [0.5, 1],
-      Extrapolation.CLAMP,
-    );
-    return {opacity, transform: [{scaleX}]};
-  }, [textSharedValue.value]);
-
-  useEffect(() => {
-    textSharedValue.value = withRepeat(
-      withTiming(1, {duration: 2000}),
-      -1,
-      true,
-    );
-  }, []);
+  const {searchText} = useNewContext();
+  const res = getAPIQuery(searchText);
+  const data = res.data?.data.articles ?? [];
 
   return (
     <StyledAppRoot
-      entering={StretchInY.springify().damping(16).mass(0.5)}
+      entering={FadeOutDown.springify().damping(16).mass(0.5)}
       exiting={StretchOutY}>
-      <StyledText>Hello Peter will pass</StyledText>
-
       <StyledPostList
         data={data}
-        style={textAnimatedStyle}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => <Item {...item} />}
+        keyExtractor={(item, index) => `${item.title}-${index}`}
+        renderItem={({item}) => <NewItem {...item} />}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
-        windowSize={10}
+        windowSize={20}
         updateCellsBatchingPeriod={800}
         removeClippedSubviews={true}
         itemLayoutAnimation={LinearTransition.springify().damping(16).mass(0.5)}
+        ListEmptyComponent={<StyledText>Search for your news...</StyledText>}
+        ListHeaderComponent={SearchInput}
+        stickyHeaderIndices={[0]}
       />
     </StyledAppRoot>
   );
