@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {RefreshControl, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {StyledAppRoot, StyledPostList, StyledText} from './StyledComponents';
 import {getAPIQuery} from './Query/query';
@@ -62,6 +62,14 @@ const MainApp = (props: Props) => {
           offset: 120 * index,
           index,
         })}
+        refreshControl={
+          <RefreshControl
+            refreshing={newsQuery.isRefetching}
+            onRefresh={() => {
+              if (searchText) newsQuery.refetch();
+            }}
+          />
+        }
       />
     </StyledAppRoot>
   );
