@@ -1,12 +1,18 @@
-import {StyleSheet, Text, TextInput, View} from 'react-native';
+import {StyleSheet, Text, TextInput} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, {
+  FadeInRight,
+  FadeOutRight,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import {useNewContext} from '../Provider/NewProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AnimatedPressable from './CustomUI/AnimatedPressable';
 
 type Props = {};
 const StorageSearchKey = 'searchKey';
-const SearchInput = (props: Props) => {
+const SearchInput = ({}: Props) => {
   const [searchValue, setSearchValue] = useState('');
   const {setSearchText} = useNewContext();
 
@@ -20,6 +26,7 @@ const SearchInput = (props: Props) => {
       throw new Error('Error while getting search value');
     }
   };
+
   //throtthle the search
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -45,6 +52,16 @@ const SearchInput = (props: Props) => {
         placeholder="Search news..."
         placeholderTextColor={'gray'}
       />
+
+      {searchValue && (
+        <AnimatedPressable
+          onPress={() => setSearchValue('')}
+          entering={FadeInRight.springify().damping(16).mass(0.5)}
+          exiting={FadeOutRight.springify().damping(16).mass(0.5)}
+          hitSlop={14}>
+          <Text style={styles.clearText}>Clear</Text>
+        </AnimatedPressable>
+      )}
     </Animated.View>
   );
 };
@@ -54,13 +71,23 @@ export default SearchInput;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingHorizontal: 20,
+
     paddingVertical: 10,
+    display: 'flex',
+    flexDirection: 'row',
+
+    marginBottom: 20,
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
   },
   textInputStyle: {
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 10,
-    padding: 10,
+    flex: 1,
+    fontSize: 16,
+  },
+  clearText: {
+    color: 'red',
+    fontSize: 16,
   },
 });

@@ -3,10 +3,13 @@ import React from 'react';
 import {StyledAppRoot, StyledPostList, StyledText} from './StyledComponents';
 import {getAPIQuery} from './Query/query';
 import {
+  FadeInDown,
+  FadeInUp,
   FadeOutDown,
   LinearTransition,
   StretchInY,
   StretchOutY,
+  useSharedValue,
 } from 'react-native-reanimated';
 import {useNewContext} from './Provider/NewProvider';
 import NewItem from './Components/NewItem';
@@ -20,9 +23,7 @@ const MainApp = (props: Props) => {
   const data = res.data?.data.articles ?? [];
 
   return (
-    <StyledAppRoot
-      entering={FadeOutDown.springify().damping(16).mass(0.5)}
-      exiting={StretchOutY}>
+    <StyledAppRoot entering={FadeInUp} exiting={StretchOutY}>
       <StyledPostList
         data={data}
         keyExtractor={(item, index) => `${item.title}-${index}`}
@@ -36,6 +37,14 @@ const MainApp = (props: Props) => {
         ListEmptyComponent={<StyledText>Search for your news...</StyledText>}
         ListHeaderComponent={SearchInput}
         stickyHeaderIndices={[0]}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+        }}
+        getItemLayout={(data, index) => ({
+          length: 120,
+          offset: 120 * index,
+          index,
+        })}
       />
     </StyledAppRoot>
   );
