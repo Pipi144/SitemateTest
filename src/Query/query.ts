@@ -1,5 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
 import axios from 'axios';
+import {TPost} from '../Components/Item';
 
 const baseQuery = ['base-query'];
 
@@ -13,7 +14,7 @@ export const getAPIQuery = () =>
           url: 'https://jsonplaceholder.typicode.com/posts',
           params: {},
         };
-        const response = await axios.request(options);
+        const response = await axios.request<TPost[]>(options);
         console.log('DATA:', response.data);
 
         return response;
