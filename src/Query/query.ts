@@ -7,7 +7,7 @@ type TQueryParams = {
   apiKey: string;
 };
 export const newsQuery = ['news-query'];
-const generateQueryKey = (search?: string) => {
+export const generateQueryKey = (search?: string) => {
   return [newsQuery, search];
 };
 export const getAPIQuery = (search?: string) =>

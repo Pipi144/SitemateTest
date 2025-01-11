@@ -1,14 +1,15 @@
-import {StyleSheet, Text, TextInput} from 'react-native';
+import {ActivityIndicator, StyleSheet, Text, TextInput} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Animated, {
   FadeInRight,
   FadeOutRight,
-  SharedValue,
-  useAnimatedStyle,
+  LinearTransition,
 } from 'react-native-reanimated';
 import {useNewContext} from '../Provider/NewProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnimatedPressable from './CustomUI/AnimatedPressable';
+import {useIsFetching} from '@tanstack/react-query';
+import {generateQueryKey} from '../Query/query';
 
 type Props = {};
 const StorageSearchKey = 'searchKey';
@@ -27,6 +28,10 @@ const SearchInput = ({}: Props) => {
     }
   };
 
+  const isFetchingNews =
+    useIsFetching({
+      queryKey: generateQueryKey(searchValue),
+    }) > 0;
   //throtthle the search
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -58,9 +63,17 @@ const SearchInput = ({}: Props) => {
           onPress={() => setSearchValue('')}
           entering={FadeInRight.springify().damping(16).mass(0.5)}
           exiting={FadeOutRight.springify().damping(16).mass(0.5)}
-          hitSlop={14}>
+          hitSlop={14}
+          layout={LinearTransition.springify().damping(16).mass(0.5)}>
           <Text style={styles.clearText}>Clear</Text>
         </AnimatedPressable>
+      )}
+      {isFetchingNews && (
+        <ActivityIndicator
+          size={'small'}
+          color={'lightblue'}
+          style={{marginLeft: 10}}
+        />
       )}
     </Animated.View>
   );

@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {StyledAppRoot, StyledPostList, StyledText} from './StyledComponents';
 import {getAPIQuery} from './Query/query';
@@ -14,14 +14,18 @@ import {
 import {useNewContext} from './Provider/NewProvider';
 import NewItem from './Components/NewItem';
 import SearchInput from './Components/SearchInput';
+import AnimatedPressable from './Components/CustomUI/AnimatedPressable';
 
 type Props = {};
 
 const MainApp = (props: Props) => {
   const {searchText} = useNewContext();
-  const res = getAPIQuery(searchText);
-  const data = res.data?.data.articles ?? [];
+  const newsQuery = getAPIQuery(searchText);
+  const data = newsQuery.data?.data.articles ?? [];
 
+  const handleRetry = () => {
+    newsQuery.refetch();
+  };
   return (
     <StyledAppRoot entering={FadeInUp} exiting={StretchOutY}>
       <StyledPostList
@@ -34,7 +38,20 @@ const MainApp = (props: Props) => {
         updateCellsBatchingPeriod={800}
         removeClippedSubviews={true}
         itemLayoutAnimation={LinearTransition.springify().damping(16).mass(0.5)}
-        ListEmptyComponent={<StyledText>Search for your news...</StyledText>}
+        ListEmptyComponent={
+          <View style={styles.emptyListWrapper}>
+            <StyledText>
+              {newsQuery.isError
+                ? 'Failed to search news'
+                : 'Search for your news...'}
+            </StyledText>
+            {newsQuery.isError && (
+              <AnimatedPressable style={styles.retryBtn} onPress={handleRetry}>
+                <Text style={{color: 'white', fontSize: 16}}>Retry</Text>
+              </AnimatedPressable>
+            )}
+          </View>
+        }
         ListHeaderComponent={SearchInput}
         stickyHeaderIndices={[0]}
         contentContainerStyle={{
@@ -52,4 +69,15 @@ const MainApp = (props: Props) => {
 
 export default MainApp;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  emptyListWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  retryBtn: {
+    backgroundColor: 'blue',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginTop: 20,
+  },
+});
